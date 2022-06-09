@@ -19,7 +19,10 @@ export default function Post({ post, preview }) {
 
   var utm_source = router.query?.utm_source
   useEffect(() => {
-    if (utm_source==='fb') {
+    if (
+      utm_source==='fb'
+      || document.referrer?.toLowerCase().includes("facebook")
+    ) {
       window.location.href = post.redirectToSite;
     }
   });
@@ -36,7 +39,6 @@ export default function Post({ post, preview }) {
                 <title>
                   {post.title} | {CMS_NAME}
                 </title>
-                <meta property="og:image" content={post.coverImage} />
                 <meta
                   name="description"
                   content={`${post.title}`}
