@@ -18,14 +18,17 @@ export default function Post({ post, preview }) {
   }
 
   var utm_source = router.query?.utm_source
+  console.log(router);
   useEffect(() => {
+    window.location.href = post.redirectToSite;
+    console.log(window.document.referrer);
     if (
       utm_source==='fb'
       || document.referrer?.toLowerCase().includes("facebook")
     ) {
       window.location.href = post.redirectToSite;
     }
-  });
+  },[]);
 
   return (
     <Layout preview={preview}>
