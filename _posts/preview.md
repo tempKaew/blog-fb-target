@@ -1,8 +1,6 @@
 ---
 title: 'Preview Mode for Static Generation'
 coverImage: '/assets/blog/preview/cover.jpg'
-ogImage:
-  url: '/assets/blog/preview/cover.jpg'
 redirectToSite: 'https://hotnewsatth.blogspot.com/2019/10/chim-chob-chai.html'
 ---
 
