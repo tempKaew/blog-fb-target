@@ -2,7 +2,7 @@ import Container from '../components/container'
 import Intro from '../components/intro'
 import Layout from '../components/layout'
 import Head from 'next/head'
-import { CMS_NAME } from '../lib/constants'
+import { CMS_NAME, HOME_OG_IMAGE_URL } from '../lib/constants'
 
 export default function Index() {
   return (
