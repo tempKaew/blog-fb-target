@@ -9,12 +9,21 @@ import PostTitle from '../components/post-title'
 import Head from 'next/head'
 import { CMS_NAME } from '../lib/constants'
 import markdownToHtml from '../lib/markdownToHtml'
+import { useEffect } from 'react'
 
-export default function Post({ post, morePosts, preview }) {
+export default function Post({ post, preview }) {
   const router = useRouter()
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
   }
+
+  var utm_source = router.query?.utm_source
+  useEffect(() => {
+    if (utm_source==='fb') {
+      window.location.href = post.redirectToSite;
+    }
+  });
+
   return (
     <Layout preview={preview}>
       <Container>
@@ -25,9 +34,31 @@ export default function Post({ post, morePosts, preview }) {
             <article className="mb-16 mt-4">
               <Head>
                 <title>
-                  {post.title} | Next.js Blog Example with {CMS_NAME}
+                  {post.title} | {CMS_NAME}
                 </title>
-                <meta property="og:image" content={post.ogImage.url} />
+                <meta property="og:image" content={post.coverImage} />
+                <meta
+                  name="description"
+                  content={`${post.title}`}
+                />
+                <meta property="og:image" content={post.coverImage} />
+                <meta
+                  property="og:image:alt"
+                  content={`${post.title}`}
+                />
+                <meta property="og:locale" content="en_US" />
+                <meta property="og:type" content="article" />
+                <meta
+                  name="og:title"
+                  content={`${post.title} | ${CMS_NAME}`}
+                />
+                <meta
+                  name="og:description"
+                  content={`${post.title}`}
+                />
+                <meta property="og:url" content="" />
+                <meta property="og:site_name" content="" />
+                <meta property="article:section" content="Animal" />
               </Head>
               <PostHeader
                 title={post.title}
@@ -42,12 +73,11 @@ export default function Post({ post, morePosts, preview }) {
   )
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params, query }) {
   const post = getPostBySlug(params.slug, [
     'title',
     'slug',
     'content',
-    'ogImage',
     'coverImage',
     'redirectToSite'
   ])
