@@ -4,8 +4,6 @@ coverImage: '/assets/blog/pit-bull-puppy-looked.png'
 redirectToSite: 'https://hotnewsatth.blogspot.com/2022/06/pit-bull-puppy-looked-on-sadly-as.html'
 ---
 
-![](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEge-Qedt-O7GR2ohfourS-MjURKsM1De2hoQ5awbsBrS3UiqpTgDbYOYs7Vh4ZwdzT3PsOWOXnpsnjgJPeRyDs-0Jt0f5SWabitboKS1OhhyGentjMWHzkM8USU_GX1XslojNsM776XgPGIDyyLuQVO-oc5ia51tm84qIzlOoOnQb00YbEnEjjg5tey/-rw/art-9-23-780x470.png)
-
 Pit Bull puppies, born into an unfair situation, were being sold as fighting dogs. The siblings that should have been going to loving homes were essentially facing a life filled with abuse, writes ilovemydogsomuch
 
 Thankfully, a local rescue heard about their owner and intervened.
