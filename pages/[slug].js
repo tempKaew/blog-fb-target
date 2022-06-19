@@ -1,111 +1,83 @@
-import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import Container from '../components/container'
 import PostBody from '../components/post-body'
-import PostHeader from '../components/post-header'
 import Layout from '../components/layout'
-import { getPostBySlug, getAllPosts } from '../lib/api'
-import PostTitle from '../components/post-title'
 import Head from 'next/head'
 import { CMS_NAME } from '../lib/constants'
-import markdownToHtml from '../lib/markdownToHtml'
-import { useEffect } from 'react'
+import PostTitle from '../components/post-title'
 
-export default function Post({ post, preview }) {
-  const router = useRouter()
-  if (!router.isFallback && !post?.slug) {
-    return <ErrorPage statusCode={404} />
-  }
+function Page({ data }) {
 
-  var utm_source = router.query?.utm_source
-  useEffect(() => {
-    if (
-      utm_source==='fb'
-      || document.referrer?.toLowerCase().includes("facebook")
-    ) {
-      window.location.href = post.redirectToSite;
+    if (!data) {
+        return <ErrorPage statusCode={404} />
     }
-  },[]);
 
-  return (
-    <Layout preview={preview}>
-      <Container>
-        {router.isFallback ? (
-          <PostTitle>Loading…</PostTitle>
-        ) : (
-          <>
-            <article className="mb-16 mt-4">
-              <Head>
-                <title>
-                  {post.title} | {CMS_NAME}
-                </title>
-                <meta
-                  name="description"
-                  content={`${post.title}`}
-                />
-                <meta property="og:image" content={post.coverImage} />
-                <meta
-                  property="og:image:alt"
-                  content={`${post.title}`}
-                />
-                <meta property="og:locale" content="en_US" />
-                <meta property="og:type" content="article" />
-                <meta
-                  name="og:title"
-                  content={`${post.title} | ${CMS_NAME}`}
-                />
-                <meta
-                  name="og:description"
-                  content={`${post.title}`}
-                />
-                <meta property="og:url" content="" />
-                <meta property="og:site_name" content="" />
-                <meta property="article:section" content="Animal" />
-              </Head>
-              <PostHeader
-                title={post.title}
-                coverImage={post.coverImage}
-              />
-              <PostBody content={post.content} />
-            </article>
-          </>
-        )}
-      </Container>
-    </Layout>
-  )
+    return (
+        <Layout>
+            <Container>
+                <>
+                    <article className="mb-16 mt-4">
+                        <Head>
+                            <title>
+                                {data.title} | {CMS_NAME}
+                            </title>
+                            <meta
+                                name="description"
+                                content={`${data.title}`}
+                            />
+                            <meta property="og:image" content={data.coverImage} />
+                            <meta
+                                property="og:image:alt"
+                                content={`${data.title}`}
+                            />
+                            <meta property="og:locale" content="en_US" />
+                            <meta property="og:type" content="article" />
+                            <meta
+                                name="og:title"
+                                content={`${data.title} | ${CMS_NAME}`}
+                            />
+                            <meta
+                                name="og:description"
+                                content={`${data.title}`}
+                            />
+                            <meta property="og:url" content="" />
+                            <meta property="og:site_name" content="" />
+                            <meta property="article:section" content="Animal" />
+                        </Head>
+                        <PostTitle>{data.title}</PostTitle>
+                        <PostBody content={data.content} />
+                    </article>
+                </>
+            </Container>
+        </Layout>
+    )
 }
 
-export async function getStaticProps({ params, query }) {
-  const post = getPostBySlug(params.slug, [
-    'title',
-    'slug',
-    'content',
-    'coverImage',
-    'redirectToSite'
-  ])
-  const content = await markdownToHtml(post.content || '')
+// This gets called on every request
+export async function getServerSideProps({ req, query }) {
+    let data = {};
+    const post_id = query.pid
+    let redirect = req?.headers?.referer?.toLowerCase().includes("facebook");
+    if (post_id) {
+        const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${process.env.BLOG_ID}/posts/${post_id}?key=${process.env.BLOG_API_KEY}`)
+        data = await res.json()
 
-  return {
-    props: {
-      post: {
-        ...post,
-        content,
-      },
-    },
-  }
+        const regex = /\/\/(\S+?(?:jpe?g|png|gif))/gm;
+        var coverImage = regex.exec(data.content)
+        data = {
+            ...data,
+            'coverImage' : (coverImage&&coverImage.length) ? coverImage[0] : ''
+        }
+    }
+    if(redirect&&data?.url){
+        return {
+            redirect: {
+                permanent: false,
+                destination: data?.url
+            }
+        }
+    }
+    return { props: { data } }
 }
 
-export async function getStaticPaths() {
-  const posts = getAllPosts(['slug'])
-
-  return {
-    paths: posts.map((post) => {
-      return {
-        params: {
-          slug: post.slug,
-        },
-      }
-    }),
-    fallback: false,
-  }
-}
+export default Page
