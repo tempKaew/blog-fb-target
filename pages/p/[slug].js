@@ -1,4 +1,4 @@
-const fs = require('fs');
+import { existsSync, readFileSync, writeFile } from 'fs';
 import ErrorPage from 'next/error'
 import Container from '../../components/container'
 import PostBody from '../../components/post-body'
@@ -61,11 +61,11 @@ export async function getServerSideProps({ req, query }) {
     let data = {};
     let redirect = req?.headers?.referer?.toLowerCase().includes("facebook");
 
-    var filePath = `data/${post_id}.json`
+    var filePath = `.output/server/pages/${post_id}.json`
 
-    if (fs.existsSync(filePath)) {
+    if (existsSync(filePath)) {
         console.log('json file');
-        const content = fs.readFileSync(filePath, 'utf8');
+        const content = readFileSync(filePath, 'utf8');
         data = JSON.parse(content)
         noContent = true
     }
@@ -85,7 +85,7 @@ export async function getServerSideProps({ req, query }) {
         var dataJson = `{"title":"${blogData.title}","coverImage":"${coverImage}","content":${content}}`
 
         //no file
-        fs.writeFile(filePath, dataJson, function (err) {
+        writeFile(filePath, dataJson, function (err) {
             if (err) throw err;
             console.log('File is created successfully.');
         });
