@@ -8,13 +8,12 @@ function Page({}) {
 }
 
 // This gets called on every request
-export async function getServerSideProps({ req, query }) {
+export async function getServerSideProps() {
     return {
         redirect: {
-            permanent: false,
             // destination: 'https://hotnewsatth.blogspot.com/2019/10/gps.html'
-            // destination: 'https://hotnewsatth.blogspot.com/000'
-            destination: 'https://xn--22ck6fqaa1b8bg.blogspot.com/'
+            destination: 'https://hotnewsatth.blogspot.com/000',
+            statusCode: 303
         }
     }
 }
