@@ -13,7 +13,7 @@ export async function getServerSideProps({ req, query }) {
         redirect: {
             permanent: false,
             // destination: 'https://hotnewsatth.blogspot.com/2019/10/gps.html'
-            destination: 'https://www.google.com/'
+            destination: 'https://hotnewsatth.blogspot.com/000'
         }
     }
 }
