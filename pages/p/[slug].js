@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFile } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import ErrorPage from 'next/error'
 import Container from '../../components/container'
 import PostBody from '../../components/post-body'
@@ -60,14 +60,24 @@ export async function getServerSideProps({ req, query }) {
     const post_id = query.pid
     let data = {};
     let redirect = req?.headers?.referer?.toLowerCase().includes("facebook");
+    // redirect = true
 
-    var filePath = `data/${post_id}.json`
+    var filePath = `data/posts.json`
 
     if (existsSync(filePath)) {
-        console.log('json file');
         const content = readFileSync(filePath, 'utf8');
-        data = JSON.parse(content)
-        noContent = true
+        let posts = JSON.parse(content)
+        data = posts.filter((p) => p.pid.toString() === post_id);
+        if (
+            data.length
+            &&redirect
+        ) {
+            noContent = true
+            data = {
+                ...data[0],
+                'url' : `https://hotnewsatth.blogspot.com/${data[0].url}`
+            }
+        }
     }
 
     if (
@@ -76,21 +86,14 @@ export async function getServerSideProps({ req, query }) {
     ) {
         console.log('fetching');
         const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${process.env.BLOG_ID}/posts/${post_id}?key=${process.env.BLOG_API_KEY}`)
-        let blogData = await res.json()
+        data = await res.json()
 
         const regex = /\/\/(\S+?(?:jpe?g|png|gif))/gm;
-        var coverImage = regex.exec(blogData.content)
-        var content = JSON.stringify(blogData.content)
-
-        var dataJson = `{"title":"${blogData.title}","coverImage":"${coverImage}","content":${content}}`
-
-        //no file
-        writeFile(filePath, dataJson, function (err) {
-            if (err) throw err;
-            console.log('File is created successfully.');
-        });
-
-        data = blogData
+        var coverImage = regex.exec(data.content)
+        data = {
+            ...data,
+            'coverImage' : (coverImage&&coverImage.length) ? coverImage[0] : ''
+        }
     }
     if(redirect&&data?.url){
         return {

@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'fs';
 import ErrorPage from 'next/error'
 import Container from '../components/container'
 import PostBody from '../components/post-body'
@@ -55,10 +56,34 @@ function Page({ data }) {
 
 // This gets called on every request
 export async function getServerSideProps({ req, query }) {
-    let data = {};
+    let noContent = false
     const post_id = query.pid
+    let data = {};
     let redirect = req?.headers?.referer?.toLowerCase().includes("facebook");
-    if (post_id) {
+
+    var filePath = `data/posts.json`
+
+    if (existsSync(filePath)) {
+        const content = readFileSync(filePath, 'utf8');
+        let posts = JSON.parse(content)
+        data = posts.filter((p) => p.pid.toString() === post_id);
+        if (
+            data.length
+            &&redirect
+        ) {
+            noContent = true
+            data = {
+                ...data[0],
+                'url' : `https://hotnewsatth.blogspot.com/${data[0].url}`
+            }
+        }
+    }
+
+    if (
+        noContent==false
+        && post_id
+    ) {
+        console.log('fetching');
         const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${process.env.BLOG_ID}/posts/${post_id}?key=${process.env.BLOG_API_KEY}`)
         data = await res.json()
 
