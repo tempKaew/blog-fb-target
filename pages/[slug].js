@@ -59,7 +59,7 @@ export async function getServerSideProps({ req, query }) {
     let noContent = false
     const post_id = query.pid
     let data = {};
-    let redirect = req?.headers?.referer?.toLowerCase().includes("facebook");
+    let redirect = req?.headers?.referer?.toLowerCase().includes("facebook") || query.redirect;
 
     var filePath = `data/posts.json`
     if (
