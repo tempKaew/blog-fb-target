@@ -95,10 +95,11 @@ export async function getServerSideProps({ req, query }) {
         }
     }
     if(redirect&&data?.url){
+        const url = data?.url.replace('http://','https://')
         return {
             redirect: {
                 permanent: false,
-                destination: data?.url
+                destination: url
             }
         }
     }
