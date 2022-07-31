@@ -62,15 +62,15 @@ export async function getServerSideProps({ req, query }) {
     let redirect = req?.headers?.referer?.toLowerCase().includes("facebook");
 
     var filePath = `data/posts.json`
-
-    if (existsSync(filePath)) {
+    if (
+        existsSync(filePath)
+        && redirect
+    ) {
+        console.log('file');
         const content = readFileSync(filePath, 'utf8');
         let posts = JSON.parse(content)
         data = posts.filter((p) => p.pid.toString() === post_id);
-        if (
-            data.length
-            &&redirect
-        ) {
+        if (data.length) {
             noContent = true
             data = {
                 ...data[0],
